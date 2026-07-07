@@ -71,17 +71,22 @@ redacted (no hostname/username/home-path leak) and refuses otherwise.
 
 ## What's in a result
 
-Each result is a JSON document (current schema: `pubrun-benchmark/3`) with:
+Each result is a JSON document (current schema: `pubrun-benchmark/4`) with:
 
 - **`machine`** — CPU/GPU model, core count, OS, Python version and implementation,
-  filesystem type of the working directory (the "installed over NFS" signal), and, on
-  clusters, Slurm context (partition, node counts).
+  environment kind (venv/conda/system), filesystem type of the working directory, the Python
+  install, `/dev/shm`, and the I/O-baseline target (the "installed over NFS" signal), and, on
+  clusters, Slurm context (partition, node counts). On a `pubrun bench` run each filesystem
+  entry also carries a `live` block (free space, inodes, and a hung/slow health status from a
+  background probe).
 - **`pass_results`** — the harness runs the full scenario set **twice** and reports each
   pass, so startup and filesystem-caching effects are visible rather than averaged away.
   Each pass records its own `pass_env`.
-- **`scenarios`** — per-scenario timings comparing a baseline run against the same workload
-  under pubrun, including ground-truth I/O baselines (`/dev/null`, `/dev/shm`, and a temp
-  directory) that isolate filesystem overhead from pubrun overhead.
+- **`scenarios`** — per-scenario **raw timings** (every iteration, in run order) plus summary
+  stats, comparing a baseline run against the same workload under pubrun, including
+  ground-truth I/O baselines (`/dev/null`, `/dev/shm`, and a temp directory) that isolate
+  filesystem overhead from pubrun overhead. The raw samples let anyone recompute any
+  statistic and pool results correctly across machines.
 
 ### What is redacted
 
