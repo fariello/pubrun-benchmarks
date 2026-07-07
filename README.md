@@ -43,15 +43,29 @@ compute node (it only submits after you confirm). See the
 | `<host>-<timestamp>.json` | The **full** result — for your own analysis. | No |
 | `<host>-<timestamp>.redacted.json` | A **redacted** copy safe to publish. | **Yes** |
 
-### 3. Open an issue
+### 3. Submit
 
-Attach the **`.redacted.json`** file to a new issue:
+The easiest way: after a local run, `pubrun bench` **offers to submit for you** (the prompt
+defaults to No — it never transmits without an explicit yes). If you agree, it uses the GitHub
+CLI (`gh`) if available, else the GitHub Issues API, else prints a ready-to-paste submission.
+Declined it? Submit later without re-running:
+
+```bash
+pubrun bench --submit-file <host>-<timestamp>.redacted.json
+```
+
+Either way it lands as an **issue** here, so it needs a GitHub account (GitHub has no
+anonymous-issue mechanism). Or submit fully manually — attach the **`.redacted.json`** file to
+a new issue:
 
 **<https://github.com/fariello/pubrun-benchmarks/issues/new>**
 
 Opening the issue from your own GitHub account lets maintainers follow up with questions —
 without any personal data ever being in the file. Fully anonymous submission (a throwaway
 account) is fine too.
+
+pubrun **never auto-transmits an un-redacted result**: the submit path verifies the file looks
+redacted (no hostname/username/home-path leak) and refuses otherwise.
 
 ---
 
