@@ -79,14 +79,21 @@ Each result is a JSON document (current schema: `pubrun-benchmark/4`) with:
   clusters, Slurm context (partition, node counts). On a `pubrun bench` run each filesystem
   entry also carries a `live` block (free space, inodes, and a hung/slow health status from a
   background probe).
-- **`pass_results`** — the harness runs the full scenario set **twice** and reports each
-  pass, so startup and filesystem-caching effects are visible rather than averaged away.
-  Each pass records its own `pass_env`.
-- **`scenarios`** — per-scenario **raw timings** (every iteration, in run order) plus summary
-  stats, comparing a baseline run against the same workload under pubrun, including
-  ground-truth I/O baselines (`/dev/null`, `/dev/shm`, and a temp directory) that isolate
-  filesystem overhead from pubrun overhead. The raw samples let anyone recompute any
-  statistic and pool results correctly across machines.
+- **`mode`** — the run tier: `quick` (2 measured passes × 15 iterations), `default` (3 × 30),
+  `rigorous` (5 × 50), or `custom`. Also `iterations`, `passes`, and `baseline_pass`.
+- **`baseline`** — an **uncaptured baseline pass** (the workload run *without* pubrun) that
+  warms caches and records the pubrun-absent cost floor. Kept separate (`uncaptured: true`) so
+  it is never mixed into the pubrun-overhead statistics.
+- **`pass_results`** — the harness runs the full scenario set **N times** (per `mode`) and
+  reports each pass, so startup and filesystem-caching effects are visible rather than averaged
+  away. Each pass records its own `pass_env`.
+- **`scenarios`** — the last (warmest) measured pass mirrored at top level: per-scenario **raw
+  timings** (every iteration, in run order) plus summary stats, comparing a baseline run
+  against the same workload under pubrun, including ground-truth I/O baselines (`/dev/null`,
+  `/dev/shm`, and a temp directory) that isolate filesystem overhead from pubrun overhead. The
+  raw samples let anyone recompute any statistic and pool results correctly across machines.
+- **`total_wall_time_s`** — wall-clock time for the whole benchmark invocation (harness start
+  → end), distinct from the summed per-iteration timings.
 
 ### What is redacted
 
